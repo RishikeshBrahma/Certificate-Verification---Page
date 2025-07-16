@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Upload File{% endblock %}
+{% block content %}
+<h1 class="title">Upload CSV File</h1>
+{% if error %}
+  <div class="message error">{{ error }}</div>
+{% endif %}
+{% if success %}
+  <div class="message success">{{ success }}</div>
+{% endif %}
+<form method="POST" action="/upload" enctype="multipart/form-data">
+  <div>
+    <label for="csv_file">Select CSV File</label>
+    <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+  </div>
+  <button type="submit" class="btn">Upload</button>
+</form>
+{% endblock %}

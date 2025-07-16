@@ -1,0 +1,12 @@
+certificate-system/
+├── app.py                  ← Flask backend
+├── .env                    ← DB credentials
+├── static/
+│   ├── style.css           ← Internal CSS (no Tailwind)
+│   └── qrcodes/            ← QR images generated automatically
+├── uploads/                ← CSV files uploaded by users
+└── templates/
+    ├── base.html             ← Base layout with dark mode toggle
+    ├── index.html            ← Home page
+    ├── upload.html           ← Upload CSV form
+    └── verify.html           ← Verify certificate

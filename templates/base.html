@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Certificate System{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Internal CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+ 
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<header>
+  <h1>Certificate System</h1>
+  <nav>
+    <div class="navbar-buttons">
+      <button class="nav-button" onclick="window.location.href='/'">Home</button>
+      <button class="nav-button" onclick="window.location.href='/upload'">Upload</button>
+      <button class="nav-button" onclick="window.location.href='/verify'">Verify</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  {% block content %}
+  {% endblock %}
+</main>
+
+<script>
+  const toggle = document.getElementById("themeToggle");
+
+  // Check if user has a preference in localStorage
+  if (localStorage.getItem("theme") === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+    toggle.checked = true;
+  }
+
+  // Apply theme and save preference
+  toggle.addEventListener("change", function () {
+    if (this.checked) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.removeItem("theme");
+    }
+  });
+</script>
