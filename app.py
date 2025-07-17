@@ -3,6 +3,7 @@ import mysql.connector
 import pandas as pd
 import qrcode
 import os
+import socket
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -23,6 +24,16 @@ QR_FOLDER = 'static/qrcodes'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(QR_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def get_local_ip():
+    """Get the local IP address of the machine"""
+    try:
+        # Connect to a remote server to get the local IP
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]
+    except Exception:
+        return "127.0.0.1"
 
 @app.route('/')
 def index():
