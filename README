@@ -1,3 +1,11 @@
+
+Certificate Verification System 📜
+A Flask-based Certificate Verification System that allows users to upload CSV files with certificate details, generate QR codes for verification, and download associated CSV files by scanning QR codes or using manual links.
+
+🔍 Overview
+This system provides a reliable platform for uploading certificate data in CSV format, generating QR codes, and verifying certificates through a user-friendly web interface. Certificate details are securely stored in a MySQL database, ensuring data integrity and accessibility.
+
+FILE STRUCTURE:- 
 certificate-system/
 ├── app.py                  ← Flask backend
 ├── .env                    ← DB credentials
@@ -9,4 +17,42 @@ certificate-system/
     ├── base.html             ← Base layout with dark mode toggle
     ├── index.html            ← Home page
     ├── upload.html           ← Upload CSV form
-    └── verify.html           ← Verify certificate
+    └── verify.html           ← Verify certificate 
+
+🛠️ Prerequisites
+Python 3.8+
+MySQL Server
+Git
+A web browser (e.g., Chrome, Firefox)
+
+🎯 Usage:
+
+* Upload CSV
+Visit: http://localhost:5000/upload
+Upload a CSV file with the following columns:
+certificate_id
+recipient_name
+course_title
+issue_date
+Example:-
+certificate_id,recipient_name,course_title,issue_date
+CERT123,John Doe,Python Programming,2025-07-04
+CERT456,Jane Smith,Data Science,2025-07-05
+
+* Verify Certificate
+Go to: http://localhost:5000/verify
+Enter a certificate ID (e.g., CERT123)
+The system will generate a QR code.
+Scan the QR code or use the manual download link to download the CSV file.
+
+📌 Troubleshooting
+📶 Ensure your device is on the same network as the server for QR code scanning.
+🛠️ Verify MySQL credentials and database setup.
+🔐 Check directory permissions if files are not saving correctly.
+
+👥 Author
+
+Rishikesh Brahma 
+
+🌐 GitHub: RishikeshBrahma
+📧 Email: rishikeshbrahma78@gmail.com.
