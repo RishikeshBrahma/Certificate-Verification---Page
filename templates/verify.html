@@ -1,32 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Verify File{% endblock %}
 {% block content %}
-<h1 class="title">Verify Certificate</h1>
+<div class="verify-container">
+  <h1 class="title">Verify Certificate</h1>
 
-{% if error %}
-  <div class="message error">{{ error }}</div>
-{% else %}
-  {% if not certificate_id %}
-    <p class="description">
-      Enter a certificate ID to view the QR code or download the CSV file.
-    </p>
+  {% if error %}
+    <div class="message error">{{ error }}</div>
+  {% else %}
+    {% if not certificate_id %}
+      <p class="description">
+        Enter a certificate ID to view the QR code or download the CSV file.
+      </p>
+    {% endif %}
+
+    <form method="GET" action="/verify" class="verify-form">
+      <div class="form-group">
+        <input type="text" name="certificate_id" id="certificate_id" required>
+        <label for="certificate_id">Certificate ID</label>
+      </div>
+      <button type="submit" class="btn">Generate QR Code</button>
+    </form>
+
+    {% if certificate_id %}
+      <div class="qr-container">
+        <img src="/static/qrcodes/{{ certificate_id }}.png" alt="QR Code" class="qr-image">
+        <div class="scan-line"></div>
+        <p class="description">Scan the QR code with your phone to download the CSV file.</p>
+        <a href="/verify_download/{{ certificate_id }}" class="btn download-btn">
+          Download CSV Manually
+        </a>
+      </div>
+    {% endif %}
   {% endif %}
-
-  <form method="GET" action="/verify">
-    <div>
-      <label for="certificate_id">Certificate ID</label>
-      <input type="text" name="certificate_id" id="certificate_id" placeholder="Enter Certificate ID" required>
-    </div>
-    <button type="submit" class="btn">Generate QR Code</button>
-  </form>
-
-  {% if certificate_id %}
-    <div style="text-align:center; margin-top: 1.5rem;">
-      <img src="/static/qrcodes/{{ certificate_id }}.png" alt="QR Code"
-           style="width: 150px; height: 150px; margin-bottom: 1rem;">
-      <p class="description">Scan the QR code with your phone to download the CSV file.</p>
-      <a href="/verify_download/{{ certificate_id }}" class="btn" style="background-color: #14b8a6;">Download CSV Manually</a>
-    </div>
-  {% endif %}
-{% endif %}
+</div>
 {% endblock %}

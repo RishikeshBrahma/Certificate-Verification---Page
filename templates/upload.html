@@ -1,18 +1,44 @@
 {% extends "base.html" %}
 {% block title %}Upload File{% endblock %}
 {% block content %}
-<h1 class="title">Upload CSV File</h1>
-{% if error %}
-  <div class="message error">{{ error }}</div>
-{% endif %}
-{% if success %}
-  <div class="message success">{{ success }}</div>
-{% endif %}
-<form method="POST" action="/upload" enctype="multipart/form-data">
-  <div>
-    <label for="csv_file">Select CSV File</label>
-    <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
-  </div>
-  <button type="submit" class="btn">Upload</button>
-</form>
+<div class="upload-container">
+  <h1 class="title">Upload CSV File</h1>
+  
+  {% if error %}
+    <div class="message error">{{ error }}</div>
+  {% endif %}
+  
+  {% if success %}
+    <div class="message success">{{ success }}</div>
+  {% endif %}
+
+  <form method="POST" action="/upload" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+      <label for="csv_file">Select CSV File</label>
+    </div>
+    
+    <div class="upload-progress">
+      <div class="progress-bar"></div>
+    </div>
+    
+    <button type="submit" class="btn">Upload</button>
+  </form>
+</div>
+
+<script>
+  // Simple upload progress simulation
+  document.querySelector('form').addEventListener('submit', function() {
+    const progressBar = document.querySelector('.progress-bar');
+    const progressContainer = document.querySelector('.upload-progress');
+    
+    progressContainer.style.display = 'block';
+    let width = 0;
+    const interval = setInterval(() => {
+      width += 10;
+      progressBar.style.width = width + '%';
+      if (width >= 100) clearInterval(interval);
+    }, 300);
+  });
+</script>
 {% endblock %}

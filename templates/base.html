@@ -4,51 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Certificate System{% endblock %}</title>
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Internal CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
- 
 </head>
+
 <body>
+  <!-- Loading Animation -->
+  <div class="loader">
+    <div class="loader-spinner"></div>
+  </div>
 
-<!-- Navigation Bar -->
-<header>
-  <h1>Certificate System</h1>
-  <nav>
-    <div class="navbar-buttons">
-      <button class="nav-button" onclick="window.location.href='/'">Home</button>
-      <button class="nav-button" onclick="window.location.href='/upload'">Upload</button>
-      <button class="nav-button" onclick="window.location.href='/verify'">Verify</button>
-    </div>
-  </nav>
-</header>
+  <header>
+    <h1 class="typewriter">Certificate System</h1>
+    <nav>
+      <div class="navbar-buttons">
+        <button class="nav-button" onclick="window.location.href='/'">Home</button>
+        <button class="nav-button" onclick="window.location.href='/upload'">Upload</button>
+        <button class="nav-button" onclick="window.location.href='/verify'">Verify</button>
+      </div>
+    </nav>
+  </header>
 
-<main>
-  {% block content %}
-  {% endblock %}
-</main>
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
 
-<script>
-  const toggle = document.getElementById("themeToggle");
+  <script>
+    // Loader control + view transitions
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        document.querySelector('.loader').style.opacity = '0';
+        document.querySelector('main').style.opacity = '1';
+        setTimeout(function() {
+          document.querySelector('.loader').style.display = 'none';
+        }, 500);
+      }, 300);
 
-  // Check if user has a preference in localStorage
-  if (localStorage.getItem("theme") === "dark") {
-    document.documentElement.setAttribute("data-theme", "dark");
-    toggle.checked = true;
-  }
-
-  // Apply theme and save preference
-  toggle.addEventListener("change", function () {
-    if (this.checked) {
-      document.documentElement.setAttribute("data-theme", "dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-      localStorage.removeItem("theme");
-    }
-  });
-</script>
+      // Button ripple effect
+      const buttons = document.querySelectorAll('.btn, .nav-button');
+      buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const x = e.clientX - e.target.getBoundingClientRect().left;
+          const y = e.clientY - e.target.getBoundingClientRect().top;
+          
+          const ripple = document.createElement('span');
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+          ripple.classList.add('ripple-effect');
+          
+          this.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 1000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

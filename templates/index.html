@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Home | Certificate System{% endblock %}
 {% block content %}
-<h1 class="title">Welcome to Certificate Verification System</h1>
-<p class="description">
-  This system allows you to upload certificate data in CSV format, generate QR codes for verification, and download associated CSV files by scanning QR codes or using manual links.
-</p>
+<div class="home-container">
+  <h1 class="title typewriter">Welcome to Certificate Verification System</h1>
+  
+  <p class="description">
+    This system allows you to upload certificate data in CSV format, generate QR codes for verification, 
+    and download associated CSV files by scanning QR codes or using manual links.
+  </p>
 
-<h2 class="title">How to Upload and Create the Correct CSV File</h2>
-<p class="description">
-  To use this system effectively, follow these steps:
-</p>
+  <h2 class="title">How to Upload and Create the Correct CSV File</h2>
+  
+  <ol class="instructions">
+    <li><strong>Create a CSV File:</strong> Use Excel or Notepad to create a CSV file.</li>
+    <li><strong>Required Columns:</strong>
+      <ul>
+        <li><code>certificate_id</code></li>
+        <li><code>recipient_name</code></li>
+        <li><code>course_title</code></li>
+        <li><code>issue_date</code></li>
+      </ul>
+    </li>
+    <li><strong>Save as:</strong> <code>.csv</code> extension (e.g., <code>certificates.csv</code>)</li>
+    <li><strong>Upload:</strong> Go to the <a href="/upload" class="text-link">Upload Page</a> and upload your file.</li>
+  </ol>
 
-<ol>
-  <li><strong>Create a CSV File:</strong> Use Excel or Notepad to create a CSV file.</li>
-  <li><strong>Required Columns:</strong>
-    <ul>
-      <li><code>certificate_id</code></li>
-      <li><code>recipient_name</code></li>
-      <li><code>course_title</code></li>
-      <li><code>issue_date</code></li>
-    </ul>
-  </li>
-  <li><strong>Save as:</strong> <code>.csv</code> extension (e.g., <code>certificates.csv</code>)</li>
-  <li><strong>Upload:</strong> Go to the <a href="/upload" style="color: var(--btn-color);">Upload Page</a> and upload your file.</li>
-</ol>
-
-<button class="btn" onclick="window.location.href='/upload'">Go to Upload Page</button>
+  <button class="btn pulse" onclick="window.location.href='/upload'">Go to Upload Page</button>
+</div>
 {% endblock %}

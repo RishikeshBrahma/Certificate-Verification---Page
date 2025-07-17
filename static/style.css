@@ -1,18 +1,17 @@
 /* =============== Global Variables =============== */
 :root {
-  --bg-main: #e1b382;         /* Sand Tan Background */
+  --bg-main: #e1b382;
   --bg-shadow: #c89666;
-  --nav-footer: #2d545e;       /* Night Blue Navbar */
-  --nav-shadow: #12343b;
-  --btn-color: #6b7280;        /* Gray Button */
-  --btn-hover: #4b5563;        /* Darker Gray on Hover */
+  --nav-footer: #2d545e;
+  --nav-shadow: hsl(190, 53%, 15%);
+  --btn-color: #6b7280;
+  --btn-hover: #4b5563;
   --text-color: #111827;
   --card-bg: white;
   --border-radius: 0.75rem;
-  --transition: all 0.3s ease-in-out;
+  --transition: all 0.3s ease;
+  --border-color: #e5e7eb;
 }
-
-
 
 * {
   margin: 0;
@@ -21,22 +20,63 @@
   font-family: 'Inter', sans-serif;
 }
 
+/* =============== Base Styles =============== */
 body {
   background-color: var(--bg-main);
   color: var(--text-color);
   line-height: 1.6;
   padding: 1rem;
   min-height: 100vh;
-
- 
+  view-transition-name: root;
 }
 
-@keyframes movePattern {
-  from { background-position: 0 0; }
-  to { background-position: 40px 40px; }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
 }
 
-/* Header & Navigation */
+/* =============== Loader =============== */
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--nav-footer);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+
+.loader-spinner {
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top: 5px solid var(--bg-main);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =============== Typography =============== */
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 1.5s steps(30, end);
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* =============== Header & Navigation =============== */
 header {
   position: sticky;
   top: 0;
@@ -52,38 +92,39 @@ header {
   border-bottom-right-radius: var(--border-radius);
 }
 
-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
 .navbar-buttons {
   display: flex;
   gap: 1rem;
 }
 
 .nav-button {
+  position: relative;
+  overflow: hidden;
   background-color: transparent;
-  border: none;
+  border: 2px solid #c89666;
   color: white;
   font-size: 1rem;
   padding: 0.5rem 1rem;
-  border-radius: 9999px;     /* Pill shape */
+  border-radius: 9999px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--transition);
 }
 
 .nav-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* =============== Main Content =============== */
 main {
   max-width: 800px;
   margin: 2rem auto;
   background-color: var(--card-bg);
   border-radius: var(--border-radius);
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 .title {
@@ -98,21 +139,18 @@ main {
   margin-bottom: 1.5rem;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* =============== Forms =============== */
+.form-group {
+  position: relative;
+  margin: 1.5rem 0;
 }
 
-label {
-  font-weight: 600;
-  color: #374151;
-}
-
-input[type="file"],
-input[type="text"] {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #D1D5DB;
+input[type="text"],
+input[type="file"] {
+  width: 100%;
+  padding: 1rem;
+  background: white;
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   transition: var(--transition);
 }
@@ -123,35 +161,179 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
 }
 
-button,
+label {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  color: #6b7280;
+  transition: var(--transition);
+  pointer-events: none;
+  font-weight: 600;
+  background: white;
+  padding: 0 0.2rem;
+}
+
+input:focus + label,
+input:valid + label {
+  top: -0.5rem;
+  left: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--nav-footer);
+}
+
+/* =============== Buttons =============== */
 .btn {
+  position: relative;
+  overflow: hidden;
   background-color: var(--btn-color);
   color: white;
   padding: 0.75rem;
   border: none;
-  border-radius: 9999px;      /* Pill-shaped */
+  border-radius: 9999px;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
 }
 
-button:hover,
 .btn:hover {
   background-color: var(--btn-hover);
+  transform: translateY(-2px);
 }
 
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.download-btn {
+  background-color: #14b8a6;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* =============== QR Code Styles =============== */
+.qr-container {
+  position: relative;
+  overflow: hidden;
+  margin: 1.5rem auto;
+  text-align: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.qr-image {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: white;
+  padding: 0.5rem;
+}
+
+.qr-image:hover {
+  transform: scale(1.05);
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(20, 184, 166, 0.5);
+  animation: scan 2s linear infinite;
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.7);
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/* =============== Messages =============== */
 .message {
   padding: 1rem;
   border-radius: var(--border-radius);
-  margin-top: 1rem;
+  margin: 1rem 0;
+  animation: fadeInUp 0.5s ease;
+  background: white;
+  border: 1px solid var(--border-color);
 }
 
 .error {
-  background-color: #FEF2F2;
-  color: #DC2626;
+  border-left: 4px solid #DC2626;
 }
 
 .success {
-  background-color: #ECFDF5;
-  color: #16A34A;
+  border-left: 4px solid #16A34A;
+}
+
+/* =============== Animations =============== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============== Upload Progress =============== */
+.upload-progress {
+  height: 4px;
+  background: #e5e7eb;
+  margin-top: 1rem;
+  border-radius: 2px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--nav-footer);
+  transition: width 0.4s ease;
+}
+
+/* =============== Focus Styles =============== */
+*:focus {
+  outline: 2px solid var(--nav-footer);
+  outline-offset: 3px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* =============== Text Links =============== */
+.text-link {
+  color: var(--nav-footer);
+  text-decoration: underline;
+  transition: var(--transition);
+}
+
+.text-link:hover {
+  color: var(--btn-hover);
 }
