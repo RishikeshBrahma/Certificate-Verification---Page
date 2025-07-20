@@ -5,6 +5,8 @@ import qrcode
 import os
 import socket
 from dotenv import load_dotenv
+import zipfile
+import io
 
 app = Flask(__name__)
 
@@ -74,7 +76,7 @@ def upload_csv():
                 course_title = str(row['course_title'])
                 issue_date = str(row['issue_date'])
 
-                verification_url = f'{request.host_url}verify_download/{certificate_id}'
+                verification_url = f'{request.host_url}verify/{certificate_id}'
                 qr = qrcode.QRCode(version=1, box_size=10, border=4)
                 qr.add_data(verification_url)
                 qr_image = qr.make_image(fill_color="black", back_color="white")
@@ -82,19 +84,23 @@ def upload_csv():
                 with open(qr_path, 'wb') as qr_file:
                     qr_image.save(qr_file)
 
+                # Use ON DUPLICATE KEY UPDATE to prevent errors on re-upload
                 query = """
                     INSERT INTO certificates 
                     (certificate_id, recipient_name, course_title, issue_date, verification_url, csv_file_path)
                     VALUES (%s, %s, %s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE 
+                    recipient_name=%s, course_title=%s, issue_date=%s, verification_url=%s, csv_file_path=%s
                 """
-                values = (certificate_id, recipient_name, course_title, issue_date, verification_url, file_path)
+                values = (certificate_id, recipient_name, course_title, issue_date, verification_url, file_path,
+                          recipient_name, course_title, issue_date, verification_url, file_path)
                 cursor.execute(query, values)
 
             conn.commit()
             cursor.close()
             conn.close()
 
-            return render_template('upload.html', success='Certificates processed successfully!')
+            return render_template('upload.html', success='Certificates processed successfully!', filename=filename)
 
         except Exception as e:
             return render_template('upload.html', error=f'Error processing CSV: {str(e)}')
@@ -102,8 +108,11 @@ def upload_csv():
     return render_template('upload.html')
 
 @app.route('/verify', methods=['GET'])
-def verify():
-    certificate_id = request.args.get('certificate_id')
+@app.route('/verify/<certificate_id>', methods=['GET'])
+def verify(certificate_id=None):
+    if not certificate_id:
+        certificate_id = request.args.get('certificate_id')
+
     if not certificate_id:
         return render_template('verify.html')
 
@@ -118,7 +127,7 @@ def verify():
         if not certificate:
             return render_template('verify.html', error='Certificate not found.', certificate_id=certificate_id)
 
-        return render_template('verify.html', certificate_id=certificate_id)
+        return render_template('verify.html', certificate=certificate, certificate_id=certificate_id)
 
     except Exception as e:
         return render_template('verify.html', error=f'Database error: {str(e)}', certificate_id=certificate_id)
@@ -128,23 +137,52 @@ def verify_download(certificate_id):
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT csv_file_path FROM certificates WHERE certificate_id = %s", (certificate_id,))
-        result = cursor.fetchone()
+        # Fetch the full certificate data
+        cursor.execute("SELECT certificate_id, recipient_name, course_title, issue_date FROM certificates WHERE certificate_id = %s", (certificate_id,))
+        certificate = cursor.fetchone()
         cursor.close()
         conn.close()
 
-        if not result or 'csv_file_path' not in result:
-            return render_template('verify.html', error='CSV file not found.', certificate_id=certificate_id)
+        if not certificate:
+            return render_template('verify.html', error='Certificate not found.', certificate_id=certificate_id)
 
-        # Explicitly cast to string
-        csv_path = str(result['csv_file_path']) # type: ignore
+        # Create a new CSV in memory
+        output = io.StringIO()
+        df = pd.DataFrame([certificate])
+        df.to_csv(output, index=False)
+        output.seek(0)
 
-        if not os.path.exists(csv_path):
-            return render_template('verify.html', error='File does not exist on server.', certificate_id=certificate_id)
-
-        return send_file(csv_path, as_attachment=True, download_name=f'certificate_{certificate_id}.csv')
+        # Send the in-memory file
+        return send_file(
+            io.BytesIO(output.getvalue().encode()),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=f'certificate_{certificate_id}.csv'
+        )
 
     except Exception as e:
         return render_template('verify.html', error=f'Error retrieving file: {str(e)}', certificate_id=certificate_id)
+
+@app.route('/bulk_download_qrcodes/<filename>')
+def bulk_download_qrcodes(filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    if not os.path.exists(file_path):
+        return "File not found.", 404
+
+    df = pd.read_csv(file_path)
+    memory_file = io.BytesIO()
+
+    with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for _, row in df.iterrows():
+            certificate_id = str(row['certificate_id'])
+            qr_path = os.path.join(QR_FOLDER, f'{certificate_id}.png')
+            if os.path.exists(qr_path):
+                zf.write(qr_path, arcname=f'{certificate_id}.png')
+
+    memory_file.seek(0)
+    return send_file(memory_file, download_name='qrcodes.zip', as_attachment=True)
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

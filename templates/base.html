@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Certificate System{% endblock %}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
-<body>
-  <!-- Loading Animation -->
-  <div class="loader">
+<body class="dark-mode"> <div class="loader">
     <div class="loader-spinner"></div>
   </div>
 
@@ -21,6 +20,7 @@
         <button class="nav-button" onclick="window.location.href='/'">Home</button>
         <button class="nav-button" onclick="window.location.href='/upload'">Upload</button>
         <button class="nav-button" onclick="window.location.href='/verify'">Verify</button>
+        <button class="theme-switcher" id="theme-switcher">☀️</button>
       </div>
     </nav>
   </header>
@@ -31,32 +31,45 @@
   </main>
 
   <script>
-    // Loader control + view transitions
     document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        document.querySelector('.loader').style.opacity = '0';
-        document.querySelector('main').style.opacity = '1';
-        setTimeout(function() {
-          document.querySelector('.loader').style.display = 'none';
-        }, 500);
+      // Loader control
+      const loader = document.querySelector('.loader');
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 500);
       }, 300);
 
-      // Button ripple effect
-      const buttons = document.querySelectorAll('.btn, .nav-button');
-      buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          const x = e.clientX - e.target.getBoundingClientRect().left;
-          const y = e.clientY - e.target.getBoundingClientRect().top;
-          
-          const ripple = document.createElement('span');
-          ripple.style.left = `${x}px`;
-          ripple.style.top = `${y}px`;
-          ripple.classList.add('ripple-effect');
-          
-          this.appendChild(ripple);
-          setTimeout(() => ripple.remove(), 1000);
-        });
+      // Theme switcher logic
+      const themeSwitcher = document.getElementById('theme-switcher');
+      const body = document.body;
+
+      const savedTheme = localStorage.getItem('theme') || 'dark-mode';
+      body.className = savedTheme;
+      themeSwitcher.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
+
+      themeSwitcher.addEventListener('click', function() {
+          if (body.classList.contains('dark-mode')) {
+              body.classList.remove('dark-mode');
+              localStorage.setItem('theme', 'light-mode');
+              themeSwitcher.textContent = '🌙';
+          } else {
+              body.classList.add('dark-mode');
+              localStorage.setItem('theme', 'dark-mode');
+              themeSwitcher.textContent = '☀️';
+          }
       });
+
+      // Fix for file input label
+      const fileInput = document.querySelector('input[type="file"]');
+      if(fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                this.setAttribute('value', this.files[0].name);
+            } else {
+                this.setAttribute('value', '');
+            }
+        });
+      }
     });
   </script>
 </body>

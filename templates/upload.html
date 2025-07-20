@@ -3,13 +3,20 @@
 {% block content %}
 <div class="upload-container">
   <h1 class="title">Upload CSV File</h1>
-  
+
   {% if error %}
     <div class="message error">{{ error }}</div>
   {% endif %}
-  
+
   {% if success %}
-    <div class="message success">{{ success }}</div>
+    <div class="message success">
+      {{ success }}
+      {% if filename %}
+        <a href="{{ url_for('bulk_download_qrcodes', filename=filename) }}" class="btn download-btn">
+          Download All QR Codes
+        </a>
+      {% endif %}
+    </div>
   {% endif %}
 
   <form method="POST" action="/upload" enctype="multipart/form-data">
@@ -17,11 +24,11 @@
       <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
       <label for="csv_file">Select CSV File</label>
     </div>
-    
+
     <div class="upload-progress">
       <div class="progress-bar"></div>
     </div>
-    
+
     <button type="submit" class="btn">Upload</button>
   </form>
 </div>
@@ -31,7 +38,7 @@
   document.querySelector('form').addEventListener('submit', function() {
     const progressBar = document.querySelector('.progress-bar');
     const progressContainer = document.querySelector('.upload-progress');
-    
+
     progressContainer.style.display = 'block';
     let width = 0;
     const interval = setInterval(() => {
