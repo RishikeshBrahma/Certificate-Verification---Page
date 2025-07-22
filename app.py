@@ -13,20 +13,28 @@ app = Flask(__name__)
 # Load environment variables
 load_dotenv()
 
+# Updated database configuration to include the port
 db_config = {
     'user': os.getenv('MYSQL_USER'),
     'password': os.getenv('MYSQL_PASSWORD'),
     'host': os.getenv('MYSQL_HOST'),
-    'database': os.getenv('MYSQL_DB')
+    'database': os.getenv('MYSQL_DB'),
+    'port': os.getenv('MYSQL_PORT') # This line is added for Aiven
 }
 
+# Define folder paths
+# Note: On hosting platforms like Render, the filesystem is ephemeral.
+# This means files saved to these folders will be deleted on the next deploy.
+# This is acceptable for this app's logic, as files are processed immediately.
 UPLOAD_FOLDER = 'uploads'
 QR_FOLDER = 'static/qrcodes'
 
+# Ensure the upload and QR code directories exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(QR_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# This function is not used in the deployed version but is kept for completeness.
 def get_local_ip():
     """Get the local IP address of the machine"""
     try:
@@ -186,3 +194,4 @@ def bulk_download_qrcodes(filename):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+# This is the main entry point for the Flask application.
